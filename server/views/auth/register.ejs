@@ -1,7 +1,7 @@
 <% layout('auth/layout') -%>
 <div class="spacer-t-20"></div>
 <% if (typeof message !== 'undefined') { %>
-  <p style='line-height: 30px' class='alert alert-danger'><%- message %></p>
+  <p style='line-height: 30px' class='alert alert-danger'><%= message %></p>
 <% } %>
 <div class="mui-panel">
   <div class="mui--pull-right">
@@ -9,7 +9,7 @@
     <a href="/auth/login">Login here!</a>
   </div>
   <h1>Register</h1>
-  
+
   <form class="mui-form" action="/register" method="post">
     <div class="mui-textfield mui-textfield--float-label">
       <input name='username' type="email" required placeholder="Email">
