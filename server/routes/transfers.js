@@ -1,13 +1,14 @@
 const Sequelize = require('sequelize');
 const express = require('express');
 const router = express.Router();
-const collection = require('lodash/collection'); 
-
+const collection = require('lodash/collection');
+const csrf = require('csurf');
 const Db = require('../db').instance;
 const Account = Db.models.account;
 const User = Db.models.user;
 
 const { bounceOutIfLoggedOut } = require('../utils/auth');
+const csrfProtection = csrf({ cookie: true });
 
 function errorAndReload(req, res, message) {
   req.session.sessionFlash = {
@@ -19,7 +20,7 @@ function errorAndReload(req, res, message) {
 //////////////////////////////////////////////////////////////
 //// ↓ EXERCISE 5 SOLUTION GOES HERE
 ////   - Add CSRF protection to this route
-router.get('/', function(req, res/*, next*/) {
+router.get('/', csrfProtection, function(req, res/*, next*/) {
   bounceOutIfLoggedOut(req, res, () => {
     let { accountTo, accountFrom, amount } = req.query;
     Account.findAll({
@@ -35,7 +36,11 @@ router.get('/', function(req, res/*, next*/) {
       //////////////////////////////////////////////////////////////
       //// ↓ EXERCISE 5 SOLUTION GOES HERE
       ////   - Pass req.csrfToken() to template so it can be rendered
-      res.render('transfers', { title: 'Strawbank: Transfers', myAccounts, userAccounts, accountTo, accountFrom, amount });
+      res.render('transfers',
+      {
+        title: 'Strawbank: Transfers',
+        csrfToken: req.csrfToken(),
+        myAccounts, userAccounts, accountTo, accountFrom, amount });
     });
   });
 });
@@ -44,7 +49,7 @@ router.get('/', function(req, res/*, next*/) {
 //// ↓ EXERCISE 5 SOLUTION GOES HERE
 ////   - Add CSRF protection to this route
 ////   - Limit this route to only POST requests
-router.all('/perform', function(req, res) {
+router.post('/perform', csrfProtection, function(req, res) {
   bounceOutIfLoggedOut(req, res, () => {
     let { accountFrom, accountTo, amount } = Object.assign(Object.assign({}, req.body), req.query);
     amount = parseFloat(amount);
@@ -67,11 +72,11 @@ router.all('/perform', function(req, res) {
     ).then(([aFrom, aTo]) => {
       if (!aFrom || !aTo) {
         errorAndReload(req, res, 'One or more account IDs are invalid');
-        return;  
+        return;
       }
       if (aFrom.balance < amount) {
         errorAndReload(req, res, 'Nonsufficient funds in account');
-        return; 
+        return;
       }
       return Db.transaction(t => {
         return aFrom.update({
