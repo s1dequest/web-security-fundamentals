@@ -6,6 +6,7 @@ const logger = require('morgan');
 const cookieParser = require('cookie-parser');
 const bodyParser = require('body-parser');
 const cors = require('cors');
+const csp = require('helmet-csp');
 
 const index = require('./routes/index');
 const accounts = require('./routes/accounts');
@@ -33,6 +34,15 @@ app.use(cors());
 ///////////////////////////////////////////
 //// ↓ EXERCISE 2 SOLUTION GOES HERE ↓ ////
 ///////////////////////////////////////////
+app.use(csp({
+  directives: {
+    defaultSrc:["'self'"],
+    styleSrc:["'self'", "'unsafe-inline'"],
+    scriptSrc:["'self'", "'sha-asdasd'"], // Need to add real token here. Can get this via error in browser.
+    fontSrc:["'data:'"]
+  }
+}));
+
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(cookieParser('secret'));
@@ -52,6 +62,10 @@ app.use(session({
 ///////////////////////////////////////////
 //// ↓ EXERCISE 7 SOLUTION GOES HERE ↓ ////
 ///////////////////////////////////////////
+app.use((req, res, next) => {
+  res.setHeader('X-Frame-Options', 'DENY');
+  next();
+}) // Need to retroactively add the CSP here too.
 
 app.use(flashMiddleware);
 
