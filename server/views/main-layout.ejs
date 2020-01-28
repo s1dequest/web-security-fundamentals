@@ -3,11 +3,14 @@
   <head>
     <title><%= title %></title>
     <!-- EXERCISE 8 requires modifying of the tag below ↓ -->
-    <link rel='stylesheet' href='/stylesheets/mui.css' />
+    <!-- The random value for integrity will generate the desired value in the browser as an error. -->
+    <!-- If we change one of the scripts in the /scripts folder we will now get an error as those resources no longer match the browsers hashed expectation -->
+    <!-- ^And the /public/javascripts folder. -->
+    <link rel='stylesheet' integrity="sha256-xx" crossorigin="anonymous" href='/stylesheets/mui.css' />
     <!-- EXERCISE 8 requires modifying of the tag below ↓ -->
-    <link rel='stylesheet' href='/stylesheets/style.css' />
+    <link rel='stylesheet' integrity="sha256-xx" crossorigin="anonymous" href='/stylesheets/style.css' />
     <!-- EXERCISE 8 requires modifying of the tag below ↓ -->
-    <script type='text/javascript' src='/javascripts/mui.js' ></script>
+    <script type='text/javascript' integrity="sha256-xx" crossorigin="anonymous" src='/javascripts/mui.js' ></script>
     <!-- ↓ EXERCISE 7 SOLUTION GOES HERE ↓ -->
       <style id="clickjack">
         body{
